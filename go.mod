@@ -1,4 +1,4 @@
-module captive-control
+module captive-control-cli
 
 go 1.22.0
 

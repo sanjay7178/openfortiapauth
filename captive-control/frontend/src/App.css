@@ -1,0 +1,14 @@
+#app {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin-top: 50px;
+}
+label {
+  margin-right: 10px;
+}
+input {
+  margin-bottom: 20px;
+}
+button {
+  margin-top: 10px;
+}

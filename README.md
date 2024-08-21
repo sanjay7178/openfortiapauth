@@ -74,6 +74,7 @@ https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/8391206d-9
 Claude's Response :
 
 #curl #linux
+
 Here's a sample cURL script that you can use to configure an external captive portal:
 
 ```bash

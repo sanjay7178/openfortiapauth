@@ -74,6 +74,49 @@ https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/8391206d-9
 Claude's Response :
 
 #curl #linux
+Here's a sample cURL script that you can use to configure an external captive portal:
+
+```bash
+#!/bin/bash
+
+# Set the necessary variables
+FGT_IP="your_fortigate_ip_address"
+USERNAME="your_username"
+PASSWORD="your_password"
+SESSION_ID="your_session_id"
+
+# Construct the POST data
+POST_DATA="magic=$SESSION_ID&username=$USERNAME&password=$PASSWORD"
+
+# Send the POST request to the FortiGate
+curl -X POST \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "$POST_DATA" \
+     "https://$FGT_IP:1000/fgtauth"
+```
+
+Here's how the script works:
+
+1. Set the necessary variables:
+   - `FGT_IP`: The IP address of your FortiGate device.
+   - `USERNAME`: The username to be authenticated.
+   - `PASSWORD`: The password to be authenticated.
+   - `SESSION_ID`: The session ID provided by the FortiGate in the initial request to the web server.
+
+2. Construct the POST data as per the format specified in your description: `magic=$SESSION_ID&username=$USERNAME&password=$PASSWORD`.
+
+3. Use the `curl` command to send the POST request to the FortiGate:
+   - `-X POST`: Specifies that this is a POST request.
+   - `-H "Content-Type: application/x-www-form-urlencoded"`: Sets the content type of the request to URL-encoded form data.
+   - `-d "$POST_DATA"`: Includes the POST data in the request body.
+   - `"https://$FGT_IP:1000/fgtauth"`: The URL to which the request is sent.
+
+Make sure to replace the placeholder values (`your_fortigate_ip_address`, `your_username`, `your_password`, and `your_session_id`) with the appropriate values for your setup.
+
+You can save this script as a file (e.g., `captive_portal.sh`) and make it executable with the `chmod +x captive_portal.sh` command. Then, you can run the script using `./captive_portal.sh`.
+
+#windows #powershell 
+
 Here's the PowerShell version of the cURL script to configure an external captive portal:
 
 ```powershell
@@ -114,7 +157,6 @@ Here's how the PowerShell script works:
 
 Make sure to replace the placeholder values (`your_fortigate_ip_address`, `your_username`, `your_password`, and `your_session_id`) with the appropriate values for your setup.
 
-#windows #powershell 
 
 You can save this script as a PowerShell script file (e.g., `captive_portal.ps1`) and run it using the `./captive_portal.ps1` command.
 

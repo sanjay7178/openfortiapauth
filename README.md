@@ -60,7 +60,7 @@ curl 'http://172.18.10.10:1000/logout?' -H 'User-Agent: Mozilla/5.0 (Windows NT 
 
 - Upon Successful Auth with Fortinet FortiAP Endpoint got as `200` status code response ie.. with certain magic generated from endpoint
 - Observation : if we use the session again with the same magic you'll `444` status code    
-![](attachment/ecdff95c5cae5433ccffbcbcf9e49d43.png)
+![](attachment/Pasted-image-20240821204218.png)
 - if the user the user logged w.r.t to FortiAP server side session will session will get generated with prior MAC address from host `NIC` and you will get auth session failed as html response
 ![](attachment/18907e8911cdda8ee763d8298afd5966.png)
 

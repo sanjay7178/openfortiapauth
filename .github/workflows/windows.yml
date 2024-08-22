@@ -1,0 +1,64 @@
+name: Windows Build and Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.16'
+
+    - name: Set up Fyne and dependencies
+      run: |
+        go install fyne.io/fyne/v2/cmd/fyne@latest
+        choco install mingw
+        choco install msys2
+
+    - name: Build for Windows
+      run: |
+        $env:PATH += ";C:\tools\mingw64\bin"
+        fyne package -os windows -icon Icon.png
+
+    - name: Read TOML and set env vars
+      run: |
+        $appName = (Get-Content FyneApp.toml | Select-String 'Name =').ToString().Split('=')[1].Trim().Trim('"')
+        echo "APP_NAME=$appName" >> $env:GITHUB_ENV
+
+    - name: Upload Windows Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows
+        path: ${{ env.APP_NAME }}.exe
+
+  create-windows-release:
+    needs: build-windows
+    runs-on: windows-latest
+    steps:
+    - name: Download Windows artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: windows
+
+    - name: Get release
+      id: get_release
+      uses: bruceadams/get-release@v1.2.3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload Windows Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release.outputs.upload_url }}
+        asset_path: ./${{ env.APP_NAME }}.exe
+        asset_name: ${{ env.APP_NAME }}-windows-amd64.exe
+        asset_content_type: application/vnd.microsoft.portable-executable

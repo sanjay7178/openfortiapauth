@@ -34,23 +34,12 @@ jobs:
         name: windows
         path: fyne-cross/dist/windows-amd64/
 
-  create-windows-release:
-    needs: build-windows
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download Windows Artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: windows
-
-    # - name: Get Release Info
-    #   id: get_release
-    #   uses: bruceadams/get-release@v1.2.3
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Rename exe file
+      run: |
+        mv fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
+      
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
-        files: |
-          fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}.exe
+        files: fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe

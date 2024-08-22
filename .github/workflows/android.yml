@@ -41,21 +41,20 @@ jobs:
           fyne-cross/dist/android-arm/
           fyne-cross/dist/android-arm64/
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: android
+    - name: Rename APK files
+      run: |
+        mv fyne-cross/dist/android/${{ env.APP_NAME }}.apk fyne-cross/dist/android/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
+        mv fyne-cross/dist/android-386/${{ env.APP_NAME }}.apk fyne-cross/dist/android-386/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
+        mv fyne-cross/dist/android-amd64/${{ env.APP_NAME }}.apk fyne-cross/dist/android-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
+        mv fyne-cross/dist/android-arm/${{ env.APP_NAME }}.apk fyne-cross/dist/android-arm/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
+        mv fyne-cross/dist/android-arm64/${{ env.APP_NAME }}.apk fyne-cross/dist/android-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          fyne-cross/dist/android/${{ env.APP_NAME }}.apk
-          fyne-cross/dist/android-386/${{ env.APP_NAME }}.apk
-          fyne-cross/dist/android-amd64/${{ env.APP_NAME }}.apk
-          fyne-cross/dist/android-arm/${{ env.APP_NAME }}.apk
-          fyne-cross/dist/android-arm64/${{ env.APP_NAME }}.apk
+          fyne-cross/dist/android/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
+          fyne-cross/dist/android-386/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
+          fyne-cross/dist/android-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
+          fyne-cross/dist/android-arm/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
+          fyne-cross/dist/android-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}.apk

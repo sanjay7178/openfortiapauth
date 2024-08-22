@@ -34,28 +34,14 @@ jobs:
       with:
         name: linux
         path: fyne-cross/dist/linux-amd64/
+        
+        
+    - name: Rename tar.xz file
+      run: |
+        mv fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}.tar.xz fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.tar.xz
 
-  create-release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download Linux Artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: linux
-
-    # - name: Create Release
-    #   id: create_release
-    #   uses: actions/create-release@v1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     tag_name: ${{ github.ref }}
-    #     release_name: Release ${{ github.ref }}
-    #     draft: false
-    #     prerelease: false
-
+    
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
-        files: fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}.tar.xz
+        files: fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.tar.xz

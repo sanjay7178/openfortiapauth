@@ -2,7 +2,7 @@ Website = "https://github.com/sanjay7178/captive-control"
 
 [Details]
   Icon = "Icon.png"
-  Name = "OpenFortiAP Authenticator"
+  Name = "OpenFortiAP_Authenticator"
   ID = "com.sanjay7178.openfortiap"
   Version = "1.0.0"
   Build = 3

@@ -21,7 +21,7 @@ jobs:
     - name: Set up Fyne Cross
       run: go install github.com/fyne-io/fyne-cross@latest
 
-    - name: Build for  Android
+    - name: Build for Android
       run: |
         fyne-cross android
 
@@ -29,7 +29,6 @@ jobs:
       run: |
         APP_NAME=$(awk -F '=' '/Name/ {gsub(/"/, "", $2); print $2}' fyne-cross.toml | xargs)
         echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-
 
     - name: Upload Android APKs
       uses: actions/upload-artifact@v2
@@ -42,31 +41,17 @@ jobs:
           fyne-cross/dist/android-arm/
           fyne-cross/dist/android-arm64/
 
-  create-release:
+  release:
     needs: build
     runs-on: ubuntu-latest
     steps:
     - name: Download all artifacts
       uses: actions/download-artifact@v2
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+    - name: Release
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-
-
-    - name: Upload signed apk
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: app/build/outputs/apk/release/vtop_ap_${{ github.ref_name }}.apk
-        asset_name: vtop_ap_${{ github.ref_name }}.apk
-        asset_content_type: application/vnd.android.package-archive
+        files: |
+          android/android/${{ env.APP_NAME }}.apk
+      # env:
+      #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

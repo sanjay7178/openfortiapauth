@@ -43,19 +43,19 @@ jobs:
 
     - name: Rename APK files
       run: |
-        mv fyne-cross/dist/android/${{ env.APP_NAME }}.apk fyne-cross/dist/android/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
-        mv fyne-cross/dist/android-386/${{ env.APP_NAME }}.apk fyne-cross/dist/android-386/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
-        mv fyne-cross/dist/android-amd64/${{ env.APP_NAME }}.apk fyne-cross/dist/android-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
-        mv fyne-cross/dist/android-arm/${{ env.APP_NAME }}.apk fyne-cross/dist/android-arm/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
-        mv fyne-cross/dist/android-arm64/${{ env.APP_NAME }}.apk fyne-cross/dist/android-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
+        mv fyne-cross/dist/android/${{ env.APP_NAME }}.apk fyne-cross/dist/android/${{ env.APP_NAME }}_${{ github.ref_name }}_universal.apk
+        mv fyne-cross/dist/android-386/${{ env.APP_NAME }}.apk fyne-cross/dist/android-386/${{ env.APP_NAME }}_${{ github.ref_name }}_386.apk
+        mv fyne-cross/dist/android-amd64/${{ env.APP_NAME }}.apk fyne-cross/dist/android-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}_amd64.apk
+        mv fyne-cross/dist/android-arm/${{ env.APP_NAME }}.apk fyne-cross/dist/android-arm/${{ env.APP_NAME }}_${{ github.ref_name }}_arm.apk
+        mv fyne-cross/dist/android-arm64/${{ env.APP_NAME }}.apk fyne-cross/dist/android-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}_arm64.apk
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          fyne-cross/dist/android/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
-          fyne-cross/dist/android-386/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
-          fyne-cross/dist/android-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
-          fyne-cross/dist/android-arm/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
-          fyne-cross/dist/android-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
+          fyne-cross/dist/android/${{ env.APP_NAME }}_${{ github.ref_name }}_universal.apk
+          fyne-cross/dist/android-386/${{ env.APP_NAME }}_${{ github.ref_name }}_386.apk
+          fyne-cross/dist/android-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}_amd64.apk
+          fyne-cross/dist/android-arm/${{ env.APP_NAME }}_${{ github.ref_name }}_arm.apk
+          fyne-cross/dist/android-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}_arm64.apk
         token: ${{ secrets.TOKEN }}

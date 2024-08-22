@@ -22,7 +22,7 @@ jobs:
       run: go install github.com/fyne-io/fyne-cross@latest
 
     - name: Build for Linux
-      run: fyne-cross linux -arch=amd64
+      run: fyne-cross linux -arch=amd64,arm64
 
     - name: Read TOML and set env vars
       run: |
@@ -38,11 +38,15 @@ jobs:
         
     - name: Rename tar.xz file
       run: |
-        mv fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}.tar.xz fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.tar.xz
+        mv fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}.tar.xz fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}_amd64.tar.xz
+        mv fyne-cross/dist/linux-arm64/${{ env.APP_NAME }}.tar.xz fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}_arm64.tar.xz
+
 
     
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
-        files: fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.tar.xz
+        files: |
+          fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}_amd64.tar.xz
+          fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}_arm64.tar.xz
         token: ${{ secrets.TOKEN }}

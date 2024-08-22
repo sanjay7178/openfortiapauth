@@ -39,17 +39,17 @@ jobs:
 
     - name: Rename exe file
       run: |
-        mv fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
-        mv fyne-cross/dist/windows-386/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-386/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
-        mv fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
+        mv fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}_amd64.exe
+        mv fyne-cross/dist/windows-386/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-386/${{ env.APP_NAME }}_${{ github.ref_name }}_386.exe
+        mv fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}_arm64.exe
       
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
         files: | 
-          fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
-          fyne-cross/dist/windows-386/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
-          fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
+          fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}_amd64.exe
+          fyne-cross/dist/windows-386/${{ env.APP_NAME }}_${{ github.ref_name }}_386.exe
+          fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}_arm64.exe
         token: ${{ secrets.TOKEN }}
         

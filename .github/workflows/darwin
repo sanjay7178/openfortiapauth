@@ -1,0 +1,67 @@
+name: macOS Build and Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.16'
+
+    - name: Set up Fyne Cross
+      run: go install github.com/fyne-io/fyne-cross@latest
+
+    - name: Find SDK Path
+      run: |
+        SDK_PATH=$(xcrun --show-sdk-path)
+        echo "SDK_PATH=$SDK_PATH" >> $GITHUB_ENV
+
+    - name: Build for macOS
+      run: fyne-cross darwin -macosx-sdk-path ${{ env.SDK_PATH }}
+
+    - name: Read TOML and set env vars
+      run: |
+        APP_NAME=$(awk -F '=' '/Name/ {gsub(/"/, "", $2); print $2}' FyneApp.toml | xargs)
+        echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+
+    - name: Upload macOS Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: macos
+        path: fyne-cross/dist/darwin-amd64/${{ env.APP_NAME }}.app
+
+  create-macos-release:
+    needs: build-macos
+    runs-on: macos-latest
+    steps:
+    - name: Download macOS artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: macos
+
+    - name: Get release
+      id: get_release
+      uses: bruceadams/get-release@v1.2.3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Compress .app
+      run: zip -r ${{ env.APP_NAME }}.app.zip ${{ env.APP_NAME }}.app
+
+    - name: Upload macOS Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release.outputs.upload_url }}
+        asset_path: ./${{ env.APP_NAME }}.app.zip
+        asset_name: ${{ env.APP_NAME }}-macos.zip
+        asset_content_type: application/

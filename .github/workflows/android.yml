@@ -53,19 +53,20 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
       with:
         tag_name: ${{ github.ref }}
         release_name: Release ${{ github.ref }}
         draft: false
         prerelease: false
 
-    - name: Upload Android Release Assets
+
+    - name: Upload signed apk
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./android/android/${{ env.APP_NAME }}.apk
-        asset_name: ${{ env.APP_NAME }}-android-all.apk
+        asset_path: app/build/outputs/apk/release/vtop_ap_${{ github.ref_name }}.apk
+        asset_name: vtop_ap_${{ github.ref_name }}.apk
         asset_content_type: application/vnd.android.package-archive

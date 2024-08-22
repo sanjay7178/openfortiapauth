@@ -51,3 +51,5 @@ jobs:
           fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
           fyne-cross/dist/windows-386/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
           fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
+        token: ${{ secrets.TOKEN }}
+        

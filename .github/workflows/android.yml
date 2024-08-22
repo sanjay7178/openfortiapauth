@@ -58,3 +58,4 @@ jobs:
           fyne-cross/dist/android-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
           fyne-cross/dist/android-arm/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
           fyne-cross/dist/android-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}.apk
+        token: ${{ secrets.TOKEN }}

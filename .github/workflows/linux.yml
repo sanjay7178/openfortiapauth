@@ -1,4 +1,4 @@
-name: Multi-Platform Build
+name: Linux Build
 
 on:
   release:
@@ -21,14 +21,13 @@ jobs:
     - name: Set up Fyne Cross
       run: go install github.com/fyne-io/fyne-cross@latest
 
-    - name: Build for Windows, Linux, macOS, and Android
-      run: |
-        fyne-cross linux
+    - name: Build for Linux
+      run: fyne-cross linux
+
     - name: Read TOML and set env vars
       run: |
         APP_NAME=$(awk -F '=' '/Name/ {gsub(/"/, "", $2); print $2}' FyneApp.toml | xargs)
         echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-
 
     - name: Upload Linux Artifact
       uses: actions/upload-artifact@v2
@@ -36,28 +35,27 @@ jobs:
         name: linux
         path: fyne-cross/dist/linux-amd64/
 
-
   create-release:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - name: Download all artifacts
+    - name: Download Linux Artifact
       uses: actions/download-artifact@v2
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
+        name: linux
 
-    - name: Release
+    # - name: Create Release
+    #   id: create_release
+    #   uses: actions/create-release@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     tag_name: ${{ github.ref }}
+    #     release_name: Release ${{ github.ref }}
+    #     draft: false
+    #     prerelease: false
+
+    - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
-        files: |
-          linux/${{ env.APP_NAME }}.tar.xz
-
+        files: fyne-cross/dist/linux-amd64/${{ env.APP_NAME }}.tar.xz

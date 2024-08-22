@@ -27,7 +27,7 @@ jobs:
 
     - name: Read TOML and set env vars
       run: |
-        APP_NAME=$(awk -F '=' '/Name/ {gsub(/"/, "", $2); print $2}' fyne-cross.toml | xargs)
+        APP_NAME=$(awk -F '=' '/Name/ {gsub(/"/, "", $2); print $2}' FyneApp.toml | xargs)
         echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 
     - name: Upload Android APKs
@@ -47,11 +47,15 @@ jobs:
     steps:
     - name: Download all artifacts
       uses: actions/download-artifact@v2
+      with:
+        name: android
 
-    - name: Release
+    - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          android/android/${{ env.APP_NAME }}.apk
-      # env:
-      #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          fyne-cross/dist/android/${{ env.APP_NAME }}.apk
+          fyne-cross/dist/android-386/${{ env.APP_NAME }}.apk
+          fyne-cross/dist/android-amd64/${{ env.APP_NAME }}.apk
+          fyne-cross/dist/android-arm/${{ env.APP_NAME }}.apk
+          fyne-cross/dist/android-arm64/${{ env.APP_NAME }}.apk

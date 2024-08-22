@@ -6,6 +6,7 @@ on:
 
 jobs:
   build-windows:
+    name: Build Windows
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -37,20 +38,19 @@ jobs:
     needs: build-windows
     runs-on: ubuntu-latest
     steps:
-    - name: Download Windows artifact
+    - name: Download Windows Artifact
       uses: actions/download-artifact@v2
       with:
         name: windows
 
-    - name: Get release
-      id: get_release
-      uses: bruceadams/get-release@v1.2.3
-      env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+    # - name: Get Release Info
+    #   id: get_release
+    #   uses: bruceadams/get-release@v1.2.3
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
-    - name: Release
+    - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          ./${{ env.APP_NAME }}-windows-amd64.exe
+          fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}.exe

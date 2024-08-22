@@ -1,3 +1,8 @@
+<div>
+  <img src="Icon.png" height="60px" align="left"> <h1>openfortiapauth</h1>
+</div>
+
+
 ### captive-control
 This the repository maintained for fortinet captive port auto login to university/organisation intranet 
 

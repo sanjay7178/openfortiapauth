@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-windows:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -16,33 +16,26 @@ jobs:
       with:
         go-version: '1.22'
 
-    - name: Set up Fyne and dependencies
-      run: |
-        go install fyne.io/fyne/v2/cmd/fyne@latest
-        choco install mingw
-        choco install msys2
-        go install github.com/fyne-io/fyne-cross@latest
+    - name: Set up Fyne Cross
+      run: go install github.com/fyne-io/fyne-cross@latest
 
     - name: Build for Windows
-      run: |
-        $env:PATH += ";C:\tools\mingw64\bin"
-        # fyne package -os windows -icon Icon.png 
-        fyne-cross windows -arch=amd64
+      run: fyne-cross windows
 
     - name: Read TOML and set env vars
       run: |
-        $appName = (Get-Content FyneApp.toml | Select-String 'Name =').ToString().Split('=')[1].Trim().Trim('"')
-        echo "APP_NAME=$appName" >> $env:GITHUB_ENV
+        APP_NAME=$(awk -F '=' '/Name/ {gsub(/"/, "", $2); print $2}' FyneApp.toml | xargs)
+        echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 
     - name: Upload Windows Artifact
       uses: actions/upload-artifact@v2
       with:
         name: windows
-        path: ${{ env.APP_NAME }}.exe
+        path: fyne-cross/dist/windows-amd64/
 
   create-windows-release:
     needs: build-windows
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - name: Download Windows artifact
       uses: actions/download-artifact@v2

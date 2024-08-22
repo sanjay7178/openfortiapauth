@@ -5,8 +5,10 @@ on:
     types: [created]
 
 jobs:
-  build-linux:
+  build:
+    name: Build
     runs-on: ubuntu-latest
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -16,47 +18,44 @@ jobs:
       with:
         go-version: '1.22'
 
-    - name: Set up Fyne
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc libgl1-mesa-dev xorg-dev
-        go install fyne.io/fyne/v2/cmd/fyne@latest
+    - name: Set up Fyne Cross
+      run: go install github.com/fyne-io/fyne-cross@latest
 
-    - name: Build for Linux
-      run: fyne package -os linux -icon Icon.png
-
-    - name: Read TOML and set env vars
+    - name: Build for linux
       run: |
-        APP_NAME=$(awk -F '=' '/Name/ {gsub(/"/, "", $2); print $2}' FyneApp.toml | xargs)
-        echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+        fyne-cross linux
 
     - name: Upload Linux Artifact
       uses: actions/upload-artifact@v2
       with:
         name: linux
-        path: ${{ env.APP_NAME }}
+        path: fyne-cross/dist/linux-amd64/
 
-  create-linux-release:
-    needs: build-linux
+
+  create-release:
+    needs: build
     runs-on: ubuntu-latest
     steps:
-    - name: Download Linux artifact
+    - name: Download all artifacts
       uses: actions/download-artifact@v2
-      with:
-        name: linux
 
-    - name: Get release
-      id: get_release
-      uses: bruceadams/get-release@v1.2.3
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
 
     - name: Upload Linux Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.get_release.outputs.upload_url }}
-        asset_path: ./${{ env.APP_NAME }}
-        asset_name: ${{ env.APP_NAME }}-linux-amd64
-        asset_content_type: application/octet-stream
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./linux/tmp.tar.xz
+        asset_name: linux-amd64.tar.xz
+        asset_content_type: application/x-xz

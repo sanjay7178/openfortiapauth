@@ -1,0 +1,121 @@
+name: Multi-Platform Build
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.16'
+
+    - name: Set up Fyne Cross
+      run: go install github.com/fyne-io/fyne-cross@latest
+
+    - name: Build for Windows, Linux, macOS, and Android
+      run: |
+        fyne-cross windows
+        fyne-cross linux
+        fyne-cross darwin
+        fyne-cross android
+
+    - name: Read TOML and set env vars
+      run: |
+        APP_NAME=$(awk -F '=' '/Name/ {gsub(/"/, "", $2); print $2}' FyneApp.toml | xargs)
+        echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+
+    - name: Upload Windows Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows
+        path: fyne-cross/dist/windows-amd64/
+
+    - name: Upload Linux Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: linux
+        path: fyne-cross/dist/linux-amd64/
+
+    - name: Upload macOS Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: macos
+        path: fyne-cross/dist/darwin-amd64/
+
+    - name: Upload Android APKs
+      uses: actions/upload-artifact@v2
+      with:
+        name: android
+        path: |
+          fyne-cross/dist/android/
+          fyne-cross/dist/android-386/
+          fyne-cross/dist/android-amd64/
+          fyne-cross/dist/android-arm/
+          fyne-cross/dist/android-arm64/
+
+  create-release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v2
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Windows Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./windows/${{ env.APP_NAME }}.exe
+        asset_name: ${{ env.APP_NAME }}-windows-amd64.exe
+        asset_content_type: application/vnd.microsoft.portable-executable
+
+    - name: Upload Linux Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./linux/${{ env.APP_NAME }}.tar.xz
+        asset_name: ${{ env.APP_NAME }}-linux-amd64.tar.xz
+        asset_content_type: application/x-xz
+
+    - name: Upload macOS Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./macos/${{ env.APP_NAME }}.tar.xz
+        asset_name: ${{ env.APP_NAME }}-macos-amd64.tar.xz
+        asset_content_type: application/x-xz
+
+    - name: Upload Android Release Assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./android/android/${{ env.APP_NAME }}.apk
+        asset_name: ${{ env.APP_NAME }}-android-all.apk
+        asset_content_type: application/vnd.android.package-archive

@@ -23,7 +23,7 @@ jobs:
 
     - name: Build for Android
       run: |
-        fyne-cross android
+        fyne-cross android -arch=*
 
     - name: Read TOML and set env vars
       run: |

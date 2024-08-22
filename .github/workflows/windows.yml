@@ -21,7 +21,7 @@ jobs:
       run: go install github.com/fyne-io/fyne-cross@latest
 
     - name: Build for Windows
-      run: fyne-cross windows
+      run: fyne-cross windows -arch=* 
 
     - name: Read TOML and set env vars
       run: |
@@ -32,14 +32,22 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: windows
-        path: fyne-cross/dist/windows-amd64/
+        path: |
+          fyne-cross/dist/windows-amd64/
+          fyne-cross/dist/windows-386/
+          fyne-cross/dist/windows-arm64/
 
     - name: Rename exe file
       run: |
         mv fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
+        mv fyne-cross/dist/windows-386/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-386/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
+        mv fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
       
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
-        files: fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
+        files: | 
+          fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
+          fyne-cross/dist/windows-386/${{ env.APP_NAME }}_${{ github.ref_name }}.exe
+          fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}.exe

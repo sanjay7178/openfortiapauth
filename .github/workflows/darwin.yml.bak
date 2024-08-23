@@ -38,30 +38,79 @@ jobs:
         name: macos
         path: fyne-cross/dist/darwin-amd64/${{ env.APP_NAME }}.app
 
-  create-macos-release:
-    needs: build-macos
-    runs-on: macos-latest
+
+  build-macos:
+    name: "build-macos"
+    runs-on:  macos-latest
+    env:
+      GO111MODULE: on
+    strategy:
+      fail-fast: false
+      matrix:
+        # use max/min supported Go versions
+        go-version: ["1.21.x", "1.17.x"]
+        target:
+
+          ## Not shared darwin image is available at the moment
+          - os: darwin
+            args: -app-id calc.sha${{ github.sha }}
+            host: macos-latest
+
+          ## Currently not easily supported from GitHub actions.
+          ## https://github.com/fyne-io/fyne-cross/pull/104#issuecomment-1099494308
+          # - os: ios
+          #   args: -app-id calc.sha${{ github.sha }}
+          #   host: macos-latest
+
     steps:
-    - name: Download macOS artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: macos
+      - name: Setup Go environment
+        id: setup-go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go-version }}
 
-    - name: Get release
-      id: get_release
-      uses: bruceadams/get-release@v1.2.3
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          path: fyne-cross
 
-    - name: Compress .app
-      run: zip -r ${{ env.APP_NAME }}.app.zip ${{ env.APP_NAME }}.app
+      - name: Checkout fyne-io/terminal
+        uses: actions/checkout@v3
+        with:
+          repository: fyne-io/terminal
+          path: terminal
 
-    - name: Upload macOS Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.get_release.outputs.upload_url }}
-        asset_path: ./${{ env.APP_NAME }}.app.zip
-        asset_name: ${{ env.APP_NAME }}-macos.zip
-        asset_content_type: application/
+      - name: Cache build artifacts
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            ~/.cache/fyne-cross
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('**/go.sum') }}
+
+      - name: Install Fyne-cross
+        working-directory: fyne-cross
+        run: go install
+
+        # attempt to use "go install" but fallback to "go get"
+      - name: Install Fyne
+        run: |
+          go install fyne.io/fyne/v2/cmd/fyne@latest ||
+          go get fyne.io/fyne/v2/cmd/fyne@latest
+
+      - name: Install Podman
+        if: ${{ runner.os == 'macos' }}
+        run: |
+          brew install podman
+          podman machine init
+          podman machine start
+
+      - name: Build
+        working-directory: terminal
+        run: |
+          fyne-cross \
+            ${{ matrix.target.os }} \
+            ${{ matrix.target.args }} \
+            -debug \
+            -name fyneterm${{ matrix.target.ext }} cmd/fyneterm

@@ -21,7 +21,7 @@ jobs:
       run: go install github.com/fyne-io/fyne-cross@latest
 
     - name: Build for Windows
-      run: fyne-cross windows -arch=* 
+      run: fyne-cross windows -arch=amd64,386,arm64
 
     - name: Read TOML and set env vars
       run: |

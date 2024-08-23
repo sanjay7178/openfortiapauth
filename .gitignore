@@ -1,0 +1,6 @@
+tmp/
+test/
+fyne-cross/
+.env
+.secrets
+bin/*

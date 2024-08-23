@@ -11,7 +11,8 @@ on:
 
 jobs:
 
-  build:
+  build-go:
+    name: build-commit-pr-go
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4

@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-windows:
-    name: Build Windows
+    name: build-windows
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -33,23 +33,23 @@ jobs:
       with:
         name: windows
         path: |
-          fyne-cross/dist/windows-amd64/
-          fyne-cross/dist/windows-386/
-          fyne-cross/dist/windows-arm64/
+          fyne-cross/bin/windows-amd64/
+          fyne-cross/bin/windows-386/
+          fyne-cross/bin/windows-arm64/
 
     - name: Rename exe file
       run: |
-        mv fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}_amd64.exe
-        mv fyne-cross/dist/windows-386/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-386/${{ env.APP_NAME }}_${{ github.ref_name }}_386.exe
-        mv fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}.exe fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}_arm64.exe
+        mv fyne-cross/bin/windows-amd64/${{ env.APP_NAME }}.exe fyne-cross/bin/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}_amd64.exe
+        mv fyne-cross/bin/windows-386/${{ env.APP_NAME }}.exe fyne-cross/bin/windows-386/${{ env.APP_NAME }}_${{ github.ref_name }}_386.exe
+        mv fyne-cross/bin/windows-arm64/${{ env.APP_NAME }}.exe fyne-cross/bin/windows-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}_arm64.exe
       
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
         files: | 
-          fyne-cross/dist/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}_amd64.exe
-          fyne-cross/dist/windows-386/${{ env.APP_NAME }}_${{ github.ref_name }}_386.exe
-          fyne-cross/dist/windows-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}_arm64.exe
+          fyne-cross/bin/windows-amd64/${{ env.APP_NAME }}_${{ github.ref_name }}_amd64.exe
+          fyne-cross/bin/windows-386/${{ env.APP_NAME }}_${{ github.ref_name }}_386.exe
+          fyne-cross/bin/windows-arm64/${{ env.APP_NAME }}_${{ github.ref_name }}_arm64.exe
         token: ${{ secrets.TOKEN }}
         

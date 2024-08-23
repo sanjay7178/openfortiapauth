@@ -5,8 +5,8 @@ on:
     types: [created]
 
 jobs:
-  build:
-    name: Build
+  build-android:
+    name: build-android
     runs-on: ubuntu-latest
     
     steps:

@@ -5,4 +5,4 @@ Website = "https://github.com/sanjay7178/captive-control"
   Name = "OpenFortiAP_Authenticator"
   ID = "com.sanjay7178.openfortiap"
   Version = "1.0.0"
-  Build = 3
+  Build = 13

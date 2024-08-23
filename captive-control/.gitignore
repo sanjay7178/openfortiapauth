@@ -1,3 +1,7 @@
 build/bin
 node_modules
 frontend/dist
+.env
+.secrets
+bin
+fyne-cross/*

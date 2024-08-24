@@ -7,7 +7,7 @@ This the repository maintained for fortinet captive port auto login to universit
 made with [fyne.io](https://fyne.io) 
 
 ### Preview - Android
-<img src="https://raw.githubusercontent.com/sanjay7178/openfortiapauth/main/attachment/screenshot1.jpg" width="300" height="600" />
+<img src="https://raw.githubusercontent.com/sanjay7178/openfortiapauth/main/attachment/screenshot2.jpeg" width="300" height="600" />
 ### Fortinet FortiAP Captive Portal Auth - POC
 
 login Script 

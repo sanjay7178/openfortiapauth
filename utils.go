@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"time"
 
 	// "net"
 	"net/http"
@@ -21,103 +22,106 @@ func Magic(fgtIP string, port string) (string, error) {
 	// Send the GET request
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatalf("Failed to make GET request: %v", err)
+		// log.Fatalf("Failed to make GET request: %v", err) 
+		return "", fmt.Errorf("Failed to make GET request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	// Check if the request was successful
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Received non-200 response: %d %s", resp.StatusCode, resp.Status)
+		// log.Fatalf("Received non-200 response: %d %s", resp.StatusCode, resp.Status)
+		return "", fmt.Errorf("Received non-200 response: %d %s", resp.StatusCode, resp.Status)
 	}
 
 	// Parse the HTML response
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		log.Fatalf("Failed to parse HTML: %v", err)
+		// log.Fatalf("Failed to parse HTML: %v", err)
+		return "", fmt.Errorf("Failed to parse HTML: %w", err)
 	}
 
 	// Find the hidden input element with name="magic" and extract its value
 	magicValue, exists := doc.Find(`input[name="magic"]`).Attr("value")
 	if !exists {
-		log.Fatalf("Magic value not found")
+		// log.Fatalf("Magic value not found")
 		return "", fmt.Errorf("Magic value not found")
 	}
 	return magicValue, nil
 
 }
 
-func Login(fgtIP, uname, passw, sessionID, port string) bool {
-	postData := url.Values{}
-	// magic, err := Magic(fgtIP)
-	// if err != nil {
-	// 	log.Error("Error:", err)
-	// }
-	// sessionID = magic
-	log.Debug(sessionID)
-	postData.Set("magic", sessionID)
-	postData.Set("username", uname)
-	postData.Set("password", passw)
+func Login(fgtIP, uname, passw, sessionID, port string)  error {
+    postData := url.Values{}
+    // magic, err := Magic(fgtIP)
+    // if err != nil {
+    // 	log.Error("Error:", err)
+    // }
+    // sessionID = magic
+    log.Debug(sessionID)
+    postData.Set("magic", sessionID)
+    postData.Set("username", uname)
+    postData.Set("password", passw)
 
-	client := &http.Client{}
-	req, err := http.NewRequest("POST", "http://"+fgtIP+":"+port+"/logout?", strings.NewReader(postData.Encode()))
-	if err != nil {
-		//fmt.Println("Error creating request:", err)
-		return false
-	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+    client := &http.Client{
+        Timeout: 5 * time.Second,
+    }
+    req, err := http.NewRequest("POST", "http://"+fgtIP+":"+port+"/logout?", strings.NewReader(postData.Encode()))
+    if err != nil {
+        return  fmt.Errorf("error creating request: %w", err)
+    }
+    req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	resp, err := client.Do(req)
-	if err != nil {
-		//fmt.Println("Error sending request:", err)
-		return false
-	}
-	defer resp.Body.Close()
+    resp, err := client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %w", err)
+    }
+    defer resp.Body.Close()
 
-	if resp.StatusCode == http.StatusOK {
-		//fmt.Println("Successfully authenticated....!")
-		return true
-	} else {
-		//fmt.Println("Failed to authenticate.")
-		return false
-	}
+    if resp.StatusCode == http.StatusOK {
+        return nil
+    } else {
+        return  fmt.Errorf("failed to authenticate: %s", resp.Status)
+    }
 }
 
-func Logout(fgtIP string, port string ,userAgent string) error {
-	// Define the URL
-	url := "http://" + fgtIP + ":" + port + "/logout?"
+func Logout(fgtIP string, port string, userAgent string) error {
+    // Define the URL
+    url := "http://" + fgtIP + ":" + port + "/logout?"
 
-	// Create a new HTTP request
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return err
-	}
+    // Create a new HTTP request
+    req, err := http.NewRequest("GET", url, nil)
+    if err != nil {
+        return err
+    }
 
-	// Set the headers
-	req.Header.Set("User-Agent", userAgent)
-	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8")
-	req.Header.Set("Accept-Language", "en-US,en;q=0.5")
-	req.Header.Set("Accept-Encoding", "gzip, deflate")
-	req.Header.Set("Connection", "keep-alive")
-	req.Header.Set("Upgrade-Insecure-Requests", "1")
-	req.Header.Set("Priority", "u=0, i")
+    // Set the headers
+    req.Header.Set("User-Agent", userAgent)
+    req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8")
+    req.Header.Set("Accept-Language", "en-US,en;q=0.5")
+    req.Header.Set("Accept-Encoding", "gzip, deflate")
+    req.Header.Set("Connection", "keep-alive")
+    req.Header.Set("Upgrade-Insecure-Requests", "1")
+    req.Header.Set("Priority", "u=0, i")
 
-	// Create an HTTP client
-	client := &http.Client{}
+    // Create an HTTP client with a timeout
+    client := &http.Client{
+        Timeout: 5 * time.Second,
+    }
 
-	// Send the request
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
+    // Send the request
+    resp, err := client.Do(req)
+    if err != nil {
+        return err
+    }
+    defer resp.Body.Close()
 
-	// Check the response status
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("logout failed: %s", resp.Status)
-	}
+    // Check the response status
+    if resp.StatusCode != http.StatusOK {
+        return fmt.Errorf("logout failed: %s", resp.Status)
+    }
 
-	//fmt.Println("Logout successful")
-	return nil
+    //fmt.Println("Logout successful")
+    return nil
 }
 
 
@@ -127,11 +131,11 @@ Alternate to ipconfig/ifconfig
 */
 func detect_interfaces() (map[string]string, error) {
 	// //fmt.Println("--- Listing the available adresses for dispatching")
-	ifaces, _ := net.Interfaces()
+	ifaces,  err := net.Interfaces()
 
 	if len(ifaces) == 0 {
 		//fmt.Println("No interfaces found")
-		return nil, nil
+		return nil, err
 	}
 
 	dict := map[string]string{}

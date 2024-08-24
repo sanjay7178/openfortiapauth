@@ -1,41 +1,16 @@
 package main
 
 import (
-	// "crypto/md5"
-	// "encoding/hex"
-	// "fmt"
-
-	// // "log"
-	// "net/http"
-	// "net/url"
-	// "os"
-	// "strings"
-
-	// // "github.com/pingcap/log"
 	"encoding/json"
-	"time"
-
-	log "github.com/sirupsen/logrus"
-
-	// "github.com/PuerkitoBio/goquery"
-	// "github.com/spf13/cobra"
-	// "github.com/spf13/viper"
-
 	"fmt"
-	// "log"
-	// "net/http"
-	// "net/url"
-	"strings"
-
-	// "time"
-
 	fyne1 "fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
-	// "github.com/PuerkitoBio/goquery"
+	log "github.com/sirupsen/logrus"
+	"strings"
 )
 
 func CreateStorage() {
@@ -48,7 +23,7 @@ func CreateStorage() {
 	// Check if the file exists
 	exists, err := storage.Exists(fileURI)
 	if err != nil {
-		fmt.Println("Error checking file existence:", err)
+		//fmt.Println("Error checking file existence:", err)
 		return
 	}
 
@@ -56,7 +31,7 @@ func CreateStorage() {
 	if !exists {
 		writer, err := storage.Writer(fileURI)
 		if err != nil {
-			fmt.Println("Error creating file:", err)
+			//fmt.Println("Error creating file:", err)
 			return
 		}
 		defer writer.Close()
@@ -64,12 +39,12 @@ func CreateStorage() {
 		// Write initial content to the file
 		_, err = writer.Write([]byte("Initial content"))
 		if err != nil {
-			fmt.Println("Error writing to file:", err)
+			//fmt.Println("Error writing to file:", err)
 			return
 		}
-		fmt.Println("File created successfully")
+		//fmt.Println("File created successfully")
 	} else {
-		fmt.Println("File already exists")
+		//fmt.Println("File already exists")
 	}
 }
 
@@ -149,7 +124,7 @@ func main() {
 	// Load existing data
 	userData, err := loadData()
 	if err != nil {
-		fmt.Println("Error loading data:", err)
+		//fmt.Println("Error loading data:", err)
 	}
 
 	// Address
@@ -211,15 +186,19 @@ func main() {
 
 	// Save button
 	saveButton := widget.NewButton("Save", func() {
+		progressBar := widget.NewProgressBar()
 		if userData.Address == "" || userData.Username == "" || userData.Password == "" || userData.Port == "" {
 			dialog.ShowError(fmt.Errorf("please fill in all fields"), myWindow)
+			progressBar.SetValue(0)
+			return
 		}
 		err := saveData(userData)
 		if err != nil {
-			fmt.Println("Error saving data:", err)
+			//fmt.Println("Error saving data:", err)
 			dialog.ShowError(err, myWindow)
 		}
 		dialog.ShowInformation("Data saved", "Your data has been saved successfully", myWindow)
+		progressBar.SetValue(1)
 	})
 
 	// Dynamic text widget
@@ -231,6 +210,7 @@ func main() {
 		if userData.Address == "" || userData.Username == "" || userData.Password == "" || userData.Port == "" {
 			dialog.ShowError(fmt.Errorf("please fill in all fields and click save"), myWindow)
 			progressBar.SetValue(0)
+			return
 		}
 		session, err := Magic(userData.Address, userData.Port)
 		if err != nil {
@@ -238,60 +218,48 @@ func main() {
 		}
 		dynamicText.SetText(session)
 		Login(userData.Address, userData.Username, userData.Password, session, userData.Port)
+		dialog.ShowInformation("Re-Login", "Re-Login successful", myWindow)
 		progressBar.SetValue(1)
 	})
 	logoutButton := widget.NewButton("Logout", func() {
+		progressBar := widget.NewProgressBar()
 		if userData.Address == "" || userData.Port == "" {
 			dialog.ShowError(fmt.Errorf("please fill in all fields and click save"), myWindow)
+			progressBar.SetValue(0)
+			return
 		}
 		err := Logout(userData.Address, userData.Port, userData.UserAgent)
 		if err != nil {
 			log.Error("Unable to logout:", err)
+			dialog.ShowError(err, myWindow)
 		}
+		progressBar.SetValue(1)
 		dynamicText.SetText("")
+		dialog.ShowInformation("Logout", "Logout successful", myWindow)
 	}) // New logout button
 
-	// IP Addresses
-	ticker := time.NewTicker(5 * time.Second)
-	defer ticker.Stop()
 	var text map[string]string
-	// var err error
-	// var ips string
-	var richText *widget.RichText
-
-	for range time.Tick(5 * time.Second) {
-		<-ticker.C
-		text, err = detect_interfaces()
-		if err != nil {
-			// fmt.Println("Error detecting interfaces:", err)
-			log.Debug("Error detecting interfaces:", err)
-		} else {
-			// fmt.Println("Detected interfaces:", text)
-			log.Debug("Detected interfaces:", text)
-			var builder strings.Builder
-			for key, value := range text {
-				builder.WriteString(key)
-				builder.WriteString(" : ")
-				builder.WriteString(value)
-				builder.WriteString("\n")
-			}
-
-			ips := builder.String()
-			// Create the RichText widget
-			richText = widget.NewRichText(&widget.TextSegment{
-				Text:  ips,
-				Style: widget.RichTextStyle{ColorName: "Blue"},
-			})
-
-		}
+	text, err = detect_interfaces()
+	var builder strings.Builder
+	for key, value := range text {
+		builder.WriteString(key)
+		builder.WriteString(" : ")
+		builder.WriteString(value)
+		builder.WriteString("\n")
 	}
+	ips := builder.String()
+	richText := widget.NewRichText(&widget.TextSegment{
+		Text:  "Assigned IP Address: \n" + ips,
+		Style: widget.RichTextStyle{TextStyle: fyne1.TextStyle{Italic: true}},
+	})
 
 	// Layout
 	content := container.NewVBox(
-		widget.NewLabel("Assigned IP Address:"),
-		richText,
-		widget.NewLabel("Address"),
+		// widget.NewLabel(""),
+		widget.NewLabel("FortiGate Details"),
+		// container.NewHBox(addressEntry, portEntry),
 		addressEntry,
+		portEntry,
 		widget.NewLabel("Username"),
 		usernameEntry,
 		widget.NewLabel("Password"),
@@ -306,6 +274,7 @@ func main() {
 		// saveButton,
 		container.NewHBox(saveButton, forceReLoginButton, logoutButton), // Buttons in horizontal layout
 		widget.NewLabel("Magic ID: "+dynamicText.Text),
+		richText,
 	)
 
 	myWindow.SetContent(content)
@@ -333,19 +302,19 @@ func main() {
 // 			// sessionID = viper.GetString("sessionID")
 
 // 			if username == "" || password == "" || fgtIP == "" {
-// 				fmt.Println("Username, password, FortiGate IP  are required.")
+// 				//fmt.Println("Username, password, FortiGate IP  are required.")
 // 				os.Exit(1)
 // 			}
 
 // 			hash := md5.Sum([]byte(password))
 // 			hashStr := hex.EncodeToString(hash[:])
 
-// 			fmt.Printf("Checking for user: %s, password: %s\n", username, hashStr)
+// 			//fmt.Printf("Checking for user: %s, password: %s\n", username, hashStr)
 
 // 			if login(fgtIP, username, password, sessionID) {
-// 				fmt.Println("Login successful.....!\n")
+// 				//fmt.Println("Login successful.....!\n")
 // 			} else {
-// 				fmt.Println("Login Error. Try again......!\n")
+// 				//fmt.Println("Login Error. Try again......!\n")
 // 			}
 // 		},
 // 	}
@@ -360,18 +329,18 @@ func main() {
 // 		Short: "Help command for the login CLI application",
 // 		Long:  "Provides detailed descriptions of the available commands and flags.",
 // 		Run: func(cmd *cobra.Command, args []string) {
-// 			fmt.Println("Usage: login [flags]\n")
-// 			fmt.Println("Flags:")
-// 			fmt.Println("  -u, --username string   Username for login")
-// 			fmt.Println("  -p, --password string   Password for login")
-// 			fmt.Println("  -i, --fgtIP string      FortiGate IP address")
-// 			fmt.Println("  -s, --sessionID string  Session ID")
-// 			fmt.Println("\nHelp command for the login CLI application provides detailed descriptions of the available commands and flags.")
+// 			//fmt.Println("Usage: login [flags]\n")
+// 			//fmt.Println("Flags:")
+// 			//fmt.Println("  -u, --username string   Username for login")
+// 			//fmt.Println("  -p, --password string   Password for login")
+// 			//fmt.Println("  -i, --fgtIP string      FortiGate IP address")
+// 			//fmt.Println("  -s, --sessionID string  Session ID")
+// 			//fmt.Println("\nHelp command for the login CLI application provides detailed descriptions of the available commands and flags.")
 // 		},
 // 	})
 
 // 	if err := rootCmd.Execute(); err != nil {
-// 		fmt.Println(err)
+// 		//fmt.Println(err)
 // 		os.Exit(1)
 // 	}
 // }

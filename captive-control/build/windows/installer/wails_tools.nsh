@@ -123,7 +123,7 @@ RequestExecutionLevel "${REQUEST_EXECUTION_LEVEL}"
     WriteRegStr HKLM "${UNINST_KEY}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
 
     ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
-    IntFmt $0 "0x%08X" $0
+    Int//fmt $0 "0x%08X" $0
     WriteRegDWORD HKLM "${UNINST_KEY}" "EstimatedSize" "$0"
 !macroend
 

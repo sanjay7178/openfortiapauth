@@ -61,23 +61,23 @@ func Login(fgtIP, uname, passw, sessionID, port string) bool {
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", "http://"+fgtIP+":"+port+"/logout?", strings.NewReader(postData.Encode()))
 	if err != nil {
-		fmt.Println("Error creating request:", err)
+		//fmt.Println("Error creating request:", err)
 		return false
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error sending request:", err)
+		//fmt.Println("Error sending request:", err)
 		return false
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusOK {
-		fmt.Println("Successfully authenticated....!")
+		//fmt.Println("Successfully authenticated....!")
 		return true
 	} else {
-		fmt.Println("Failed to authenticate.")
+		//fmt.Println("Failed to authenticate.")
 		return false
 	}
 }
@@ -116,7 +116,7 @@ func Logout(fgtIP string, port string ,userAgent string) error {
 		return fmt.Errorf("logout failed: %s", resp.Status)
 	}
 
-	fmt.Println("Logout successful")
+	//fmt.Println("Logout successful")
 	return nil
 }
 
@@ -126,11 +126,11 @@ Detect the addresses which can  be used for dispatching in non-tunnelling mode.
 Alternate to ipconfig/ifconfig
 */
 func detect_interfaces() (map[string]string, error) {
-	fmt.Println("--- Listing the available adresses for dispatching")
+	// //fmt.Println("--- Listing the available adresses for dispatching")
 	ifaces, _ := net.Interfaces()
 
 	if len(ifaces) == 0 {
-		fmt.Println("No interfaces found")
+		//fmt.Println("No interfaces found")
 		return nil, nil
 	}
 
@@ -142,7 +142,7 @@ func detect_interfaces() (map[string]string, error) {
 			for _, addr := range addrs {
 				if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 					if ipnet.IP.To4() != nil {
-						fmt.Printf("[+] %s, IPv4:%s\n", iface.Name, ipnet.IP.String())
+						//fmt.Printf("[+] %s, IPv4:%s\n", iface.Name, ipnet.IP.String())
 						dict[iface.Name] = ipnet.IP.String()
 					}
 				}

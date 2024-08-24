@@ -2,7 +2,7 @@
 
 // import (
 // 	"context"
-// 	"fmt"
+// 	"//fmt"
 // )
 
 // // App struct
@@ -22,15 +22,16 @@
 // }
 
 // // Greet returns a greeting for the given name
-// func (a *App) Greet(name string) string {
-// 	return fmt.Sprintf("Hello %s, It's show time!", name)
-// }
+//
+//	func (a *App) Greet(name string) string {
+//		return //fmt.Sprintf("Hello %s, It's show time!", name)
+//	}
 package main
 
 import (
 	// "crypto/md5"
 	// "encoding/hex"
-	"fmt"
+
 	"io"
 	"net/http"
 	"net/url"
@@ -54,7 +55,7 @@ func (a *App) Login(username, password string) bool {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error:", err)
+		//fmt.Println("Error:", err)
 		return false
 	}
 	defer resp.Body.Close()
@@ -75,7 +76,7 @@ func (a *App) Login(username, password string) bool {
 
 	resp, err = client.Do(req)
 	if err != nil {
-		fmt.Println("Error:", err)
+		//fmt.Println("Error:", err)
 		return false
 	}
 	defer resp.Body.Close()
@@ -84,7 +85,7 @@ func (a *App) Login(username, password string) bool {
 	if string(body) == "Failed" {
 		return false
 	} else {
-		fmt.Println("Successfully authenticated....!")
+		//fmt.Println("Successfully authenticated....!")
 		return true
 	}
 }

@@ -4,3 +4,4 @@ fyne-cross/
 .env
 .secrets
 bin/*
+openfortiapauth

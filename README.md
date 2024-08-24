@@ -4,8 +4,7 @@
 
 
 This the repository maintained for fortinet captive port auto login to university/organisation intranet 
-
-for this i made golang wails cross platform desktop application checkout [wails desktop](captive-control/README.md)
+made with [fyne.io](https://fyne.io) 
 
 ### Preview - Android
 <img src="https://raw.githubusercontent.com/sanjay7178/openfortiapauth/main/attachment/screenshot1.jpg" width="400" height="800" />

@@ -1,0 +1,44 @@
+app-id: io.sanjay7178.openfortiapauth
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+    - org.freedesktop.Sdk.Extension.golang
+command: openfortiapauth
+
+finish-args:
+    - --share=ipc
+    - --socket=x11
+    - --device=dri
+    - --talk-name=org.freedesktop.Notifications
+    - --filesystem=home
+    - --share=network
+    # Add the following line temporarily for debugging:
+    # - --filesystem=host
+
+build-options:
+  env:
+    - GOBIN=/app/bin
+    - GOROOT=/usr/lib/sdk/golang
+    - PATH=/usr/lib/sdk/golang/bin:${PATH}
+    - GOPROXY=direct
+    - CGO_ENABLED=0
+    - DNS_SERVER=1.1.1.1,8.8.8.8
+    - NO_PROXY=*,
+    - no_proxy=*
+
+modules:
+    - name: openfortiapauth
+      buildsystem: simple
+      build-commands:
+        - go mod tidy
+        - go mod vendor
+        - go build -mod=vendor -trimpath -o openfortiapauth
+        - install -Dm00755 openfortiapauth $FLATPAK_DEST/bin/openfortiapauth
+        - install -Dm00644 Icon.png $FLATPAK_DEST/share/icons/hicolor/256x256/apps/$FLATPAK_ID.png
+        - install -Dm00644 $FLATPAK_ID.desktop $FLATPAK_DEST/share/applications/$FLATPAK_ID.desktop
+        - install -Dm00644 $FLATPAK_ID.appdata.xml $FLATPAK_DEST/share/appdata/$FLATPAK_ID.appdata.xml
+      sources:
+        - type: archive
+          url: "https://github.com/sanjay7178/openfortiapauth/archive/refs/tags/v1.tar.gz"
+          sha256: 156ca67d8492e02fc49eafd94f680cdd4d0db4d0e2f5531acebb769a876cb3ae

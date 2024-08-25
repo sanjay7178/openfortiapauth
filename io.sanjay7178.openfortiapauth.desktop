@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+
+Name=OpenFortiAP_Authenticator
+Comment=Open-source implementation of the Fortinet FortiAP (Captive Portal) client login.
+Categories=Productivity;Development;
+Keywords=fyne;
+
+Icon=io.sanjay7178.openfortiap
+Exec=openfortiap
+Terminal=false

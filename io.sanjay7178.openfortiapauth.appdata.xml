@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.sanjay7178.openfortiauth</id>
+  
+  <name>flatpak_demo</name>
+  <developer_name>Fyne.io developers</developer_name>
+  <summary>Open-source implementation of the Fortinet FortiAP (Captive Portal) client login.</summary>
+  
+  <metadata_license>BSD-3-Clause</metadata_license>
+  <project_license>BSD-3-Clause</project_license>
+  
+  <recommends>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </recommends>
+  
+  <description>
+    <p>Open-source implementation of the Fortinet FortiAP (Captive Portal) client login.</p>
+  </description>
+  
+  <launchable type="desktop-id">io.sanjay7178.openfortiauth.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/sanjay7178/openfortiapauth/main/attachment/screenshot2.jpeg</image>
+      <caption>Markdown preview</caption>
+    </screenshot>
+  </screenshots>
+
+  <!-- Override the kudos that aren't automatically added. See https://gitlab.gnome.org/GNOME/gnome-software/blob/main/doc/kudos.md.-->
+  <!-- This is not required in any way but helps software centers better understand Fyne applications. If you don't use notifications, you should remove it from the list. -->
+  <kudos>
+    <kudo>ModernToolkit</kudo>
+    <kudo>Notifications</kudo>
+  </kudos>
+
+  <url type="bugtracker">https://github.com/fyne-io/flatpak_demo/issues</url>
+  <url type="donation">https://github.com/sponsors/fyne-io</url>
+  <url type="homepage">https://github.com/fyne-io/flatpak_demo</url>
+
+  <!-- Generate the oars rating at: https://hughsie.github.io/oars/generate.html -->
+  <content_rating type="oars-1.1" />
+  
+  <!-- Needed to satisfy https://docs.flathub.org/docs/for-app-authors/metainfo-guidelines/quality-guidelines/#has-primary-brand-colors. -->
+  <!-- The colors below are only examples taken from the Fyne logo and not official for the project in any way. --> 
+  <branding>
+    <color type="primary" scheme_preference="light">#023c8a</color>
+    <color type="primary" scheme_preference="dark">#03228a</color>
+  </branding>
+  
+  <releases>
+    <release version="1.2.0" date="2021-12-22" type="stable">
+      <description>
+        <p>Better metadata and sandbox permissions</p>
+      </description>
+      <url type="details">https://github.com/sanjay7178/openfortiapauth/releases/tag/v1</url>
+    </release>
+  </releases>
+
+</component>

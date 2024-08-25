@@ -5,3 +5,5 @@ fyne-cross/
 .secrets
 bin/*
 openfortiapauth
+.flatpak-builder
+build-dir

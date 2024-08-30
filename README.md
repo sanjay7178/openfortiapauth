@@ -6,6 +6,11 @@
 This the repository maintained for fortinet captive port auto login to university/organisation intranet 
 made with [fyne.io](https://fyne.io) 
 
+### Installation
+Find out the OS agnostic installation binaries at [latest release](https://github.com/sanjay7178/openfortiapauth/releases)
+or
+Checkout at [fyne app listing](https://apps.fyne.io/apps/com.sanjay7178.openfortiap.html)
+
 ### Preview - Android
 <img src="https://raw.githubusercontent.com/sanjay7178/openfortiapauth/main/attachment/screenshot2.jpeg" width="300" height="600" />
 ### Fortinet FortiAP Captive Portal Auth - POC
